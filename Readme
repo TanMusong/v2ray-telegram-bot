@@ -1,0 +1,6 @@
+简单的v2ray订阅服务器，使用TelegramBot管理
+
+```
+docker run -d --name bot --restart=always -v /etc/v2ray-telegram-bot/:/etc/v2ray-telegram-bot/ -v /usr/v2ray-telegram-bot/:/usr/v2ray-telegram-bot/ -v /etc/letsencrypt:/etc/letsencrypt -p 48629:48629 bot
+```
+
