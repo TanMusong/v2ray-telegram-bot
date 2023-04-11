@@ -1,13 +1,11 @@
-import Bot from "./bot";
-import Http from "./http";
-import File from "./file";
-
-
-
+import Bot from "./bot/bot";
+import Const from "./const/const";
+import Http from "./server/http";
+import File from "./utils/file";
 
 const main = () => {
 
-    const configString = File.readString('/etc/v2ray-telegram-bot/config.json');
+    const configString = File.readString(Const.CONFIG_PATH);
     if (!configString) {
         throw new Error();
     }

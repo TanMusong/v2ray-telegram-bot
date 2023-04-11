@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import Subscribe from "./subscribe";
+import Subscribe from "../subscribe/subscribe";
 
 export default class Bot {
 
@@ -26,6 +26,9 @@ export default class Bot {
         switch (command) {
             case '/start':
                 break;
+            // case '/list':
+            //     this.bot.sendMessage(chatId, `Error args for command "/update"`, { reply_markup: { keyboard: [[{ text: 'test1' }]], resize_keyboard: true } });
+            //     break;
             case '/update':
                 this.handlerUpdate(data, chatId);
                 break;

@@ -3,7 +3,7 @@ import https from 'https';
 import url from 'url';
 import fs from 'fs';
 
-import Subscribe from './subscribe';
+import Subscribe from '../subscribe/subscribe';
 
 export default class Http {
     private port: number;
