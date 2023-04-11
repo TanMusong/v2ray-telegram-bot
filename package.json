@@ -7,10 +7,13 @@
   "author": "TanMusong",
   "license": "ISC",
   "dependencies": {
+    "fs": "^0.0.1-security",
     "node-telegram-bot-api": "^0.61.0",
+    "path": "^0.12.7",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/node": "^18.15.11",
     "@types/node-telegram-bot-api": "^0.61.6",
     "@types/uuid": "^9.0.1",
     "typescript": "^5.0.4"

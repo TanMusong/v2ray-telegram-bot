@@ -37,7 +37,6 @@ export default class Http {
             return;
         }
         const pathname = url.parse(request.url).pathname;
-        console.log(pathname);
         if (!pathname || pathname === '/') {
             response.writeHead(404);
             response.end();

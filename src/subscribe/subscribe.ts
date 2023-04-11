@@ -27,7 +27,6 @@ namespace Subscribe {
 
         for (const key in urlData) {
             const item = urlData[key];
-            console.log(`${item}\n${url}`)
             if (item === url) return key;
         }
         return undefined;
