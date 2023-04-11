@@ -4,5 +4,5 @@ WORKDIR /usr/local/v2ray-telegram-bot
 RUN npm i \
     && npm i typescript -g \
     && tsc \
-    && node src/main
-EXPOSE 48629
+CMD node src/main
+
