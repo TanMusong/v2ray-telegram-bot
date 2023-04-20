@@ -1,63 +1,61 @@
 import TelegramBot from "node-telegram-bot-api";
-import Subscribe from "../subscribe/subscribe";
+import Language from "../i8n/language";
+import handlerUpdate from "./handler/handler_add";
+import handlerUrl from "./handler/handler_url";
+import Log from "../utils/log";
+import Data from "../data/data";
+import handlerStart from "./handler/handler_start";
+import { User } from "../const/type";
+import handlerList from "./handler/handler_list";
 
 export default class Bot {
 
     private root: string;
     private bot: TelegramBot;
+    private data: Data;
 
-    constructor(token: string, root: string) {
+    constructor(token: string, root: string, data: Data) {
         this.root = root;
+        this.data = data;
         this.bot = new TelegramBot(token, { polling: true });
         this.bot.on('message', msg => this.onBotMessage(msg));
     }
 
-    private onBotMessage(msg: TelegramBot.Message): void {
-        const chatId = msg.chat.id;
-        const username = msg.chat.username;
-        if (username !== this.root) {
-            this.bot.sendMessage(chatId, 'Permission denied.');
-            return;
+    private async onBotMessage(msg: TelegramBot.Message): Promise<void> {
+        const chat = msg.chat;
+        const chatId = chat.id;
+        const username = chat.username;
+        if (!username) return;
+
+
+        let user: User | undefined = await this.data.get(`SELECT * FROM 'user' WHERE username = '${username}';`);
+        if (!user) {
+            if (username !== this.root) {
+                this.bot.sendMessage(chatId, Language.getText('permission_denied'));
+                return;
+            } else {
+                user = { username, permission: 100 }
+                this.data.run(`INSERT INTO user VALUES ('${user.username}', ${user.permission});`)
+            }
         }
         const text = msg.text;
         if (!text) return;
-        const data = text.split(' ');
-        const command = data.shift();
+        const contents = text.split(' ');
+        const command = contents.shift();
+        Log.info(this.constructor.name, Log.Style.Color.Bright, '');
         switch (command) {
             case '/start':
+                handlerStart(this.bot, user, chat);
                 break;
-            // case '/list':
-            //     this.bot.sendMessage(chatId, `Error args for command "/update"`, { reply_markup: { keyboard: [[{ text: 'test1' }]], resize_keyboard: true } });
-            //     break;
-            case '/update':
-                this.handlerUpdate(data, chatId);
+            case '/list':
+                handlerList(this.bot, this.data, chat, contents);
+                break;
+            case '/add':
+                handlerUpdate(this.bot, this.data, user, chat, contents);
                 break;
             case '/url':
-                this.handlerUrl(data, chatId);
-                break;
-            default:
-                this.bot.sendMessage(chatId, 'Undefined command.');
+                handlerUrl(this.bot, this.data, user, chat, contents);
                 break;
         }
-    }
-
-    private handlerUpdate(data: string[], chatId: TelegramBot.ChatId): void {
-        if (data.length !== 2) {
-            this.bot.sendMessage(chatId, `Error args for command "/update"`);
-            return;
-        }
-        const [key, content] = data;
-        Subscribe.update(key, content);
-        this.bot.sendMessage(chatId, `Config "${key}" updated`);
-    }
-
-    private handlerUrl(data: string[], chatId: TelegramBot.ChatId): void {
-        if (data.length !== 1) {
-            this.bot.sendMessage(chatId, `Error args for command "/url"`);
-            return;
-        }
-        const key = data[0];
-        this.bot.sendMessage(chatId, `Config "${key}" url: \n${Subscribe.key2url(key)}`);
-
     }
 }
