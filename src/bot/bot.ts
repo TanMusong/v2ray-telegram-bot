@@ -5,6 +5,7 @@ export default class Bot {
 
     private root: string;
     private bot: TelegramBot;
+    private updating: string[] | null = null;
 
     constructor(token: string, root: string) {
         this.root = root;
@@ -21,6 +22,10 @@ export default class Bot {
         }
         const text = msg.text;
         if (!text) return;
+        if (this.updating) {
+            this.updating[1] = this.updating[1] + text;
+            return;
+        };
         const data = text.split(' ');
         const command = data.shift();
         switch (command) {
@@ -29,6 +34,13 @@ export default class Bot {
             // case '/list':
             //     this.bot.sendMessage(chatId, `Error args for command "/update"`, { reply_markup: { keyboard: [[{ text: 'test1' }]], resize_keyboard: true } });
             //     break;
+            case '/update_start':
+                this.updating = [data[0], data[1] || ''];
+                break;
+            case '/update_finish':
+                this.updating && this.handlerUpdate(this.updating, chatId);
+                this.updating = null;
+                break;
             case '/update':
                 this.handlerUpdate(data, chatId);
                 break;
