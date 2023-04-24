@@ -22,12 +22,13 @@ export default class Bot {
         }
         const text = msg.text;
         if (!text) return;
-        if (this.updating) {
+
+        const data = text.split(' ');
+        const command = data.shift();
+        if (this.updating && command !== '/update_finish') {
             this.updating[1] = this.updating[1] + text;
             return;
         };
-        const data = text.split(' ');
-        const command = data.shift();
         switch (command) {
             case '/start':
                 break;
